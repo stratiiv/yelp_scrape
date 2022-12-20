@@ -2,9 +2,8 @@ import re
 import requests
 from bs4 import BeautifulSoup
 import pprint
+
 URL = 'https://www.yelp.com/biz/the-porch-at-schenley-pittsburgh'
-
-
 
 def parse_yelp_page(url):
     """
@@ -34,5 +33,16 @@ def parse_yelp_page(url):
         date = review.find(class_='css-chan6m').text.replace('/','-')
         description = review.find(class_='raw__09f24__T4Ezm').text
         output.append({'author':author,'stars':stars,'date':date,'description':description})
-    pprint.pprint(output)
-parse_yelp_page(URL)
+    return output
+
+
+def extract_yelp_reviews(url):
+    output=[]
+    for i in range(0,999,10):
+        new_url= url + f'?start={i}'
+        single_page_reviews = parse_yelp_page(new_url)
+        output+=single_page_reviews
+    return output
+
+
+extract_yelp_reviews(URL)

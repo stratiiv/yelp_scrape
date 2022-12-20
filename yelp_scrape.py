@@ -1,7 +1,7 @@
 import re
 import requests
 from bs4 import BeautifulSoup
-
+import pprint
 URL = 'https://www.yelp.com/biz/the-porch-at-schenley-pittsburgh'
 
 
@@ -27,6 +27,12 @@ def parse_yelp_page(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.text,'html.parser')
     all_reviews = soup.find_all(class_='review__09f24__oHr9V border-color--default__09f24__NPAKY')
-    for i in all_reviews:
-        print()
+    output=[]
+    for review in all_reviews:
+        author = review.find(class_='css-1m051bw').text
+        stars = 5 - len(review.find_all(attrs={'fill':'#BBBAC0','opacity':'0.5','d':'M0 4C0 1.79086 1.79086 0 4 0H10V20H4C1.79086 20 0 18.2091 0 16V4Z'}))
+        date = review.find(class_='css-chan6m').text.replace('/','-')
+        description = review.find(class_='raw__09f24__T4Ezm').text
+        output.append({'author':author,'stars':stars,'date':date,'description':description})
+    pprint.pprint(output)
 parse_yelp_page(URL)
